@@ -71,7 +71,7 @@
 
 ;; ------- Start of own code -------
 
-;; function table
+;; FUNCTION TABLE
 (define *function-table* (make-hash))
 (define (function-get key)
         (hash-ref *function-table* key))
@@ -83,12 +83,8 @@
 ;; https://ds26gte.github.io/tyscheme/index-Z-H-4.html#node_sec_2.1 
 (for-each
     (lambda (pair)
-            (function-put! (car pair) (cadr pair)))
+        (function-put! (car pair) (cadr pair)))
     `(
-        (log10_2 0.301029995663981195213738894724493026768189881)
-        (sqrt_2  1.414213562373095048801688724209698078569671875)
-        (e       2.718281828459045235360287471352662497757247093)
-        (pi      3.141592653589793238462643383279502884197169399)
         (div     ,(lambda (x y) (floor (/ x y))))
         (log10   ,(lambda (x) (/ (log x) (log 10.0))))
         (mod     ,(lambda (x y) (- x (* (div x y) y))))
@@ -112,14 +108,23 @@
         (>= ,>=)
         (= , =)
      ))
-;; variable table
+
+;; VARIABLE TABLE
 (define *variable-table* (make-hash))
 (define (variable-get key)
         (hash-ref *variable-table* key))
 (define (variable-put! key value)
         (hash-set! *variable-table* key value))
-
-;; array table
+;; init *variable-table*
+;; e & pi
+(for-each
+    (lambda (pair) 
+        (variable-put! (car pair) (cadr pair)))
+    `( 
+        (e 2.718281828459045235360287471352662497757247093)
+        (pi 3.141592653589793238462643383279502884197169399)
+     ))
+;; ARRAY TABLE
 (define *array-table* (make-hash))
 (define (array-get key)
         (hash-ref *array-table* key))
@@ -131,7 +136,7 @@
 
 )
 
-;; label table
+;; LABEL TABLE
 (define *label-table* (make-hash))
 (define (label-get key)
         (hash-ref *label-table* key))
