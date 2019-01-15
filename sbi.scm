@@ -78,6 +78,40 @@
 (define (function-put! key value)
         (hash-set! *function-table* key value))
 
+;; initalize *function table*
+;; pulled from
+;; https://ds26gte.github.io/tyscheme/index-Z-H-4.html#node_sec_2.1 
+(for-each
+    (lambda (pair)
+            (function-put! (car pair) (cadr pair)))
+    `(
+        (log10_2 0.301029995663981195213738894724493026768189881)
+        (sqrt_2  1.414213562373095048801688724209698078569671875)
+        (e       2.718281828459045235360287471352662497757247093)
+        (pi      3.141592653589793238462643383279502884197169399)
+        (div     ,(lambda (x y) (floor (/ x y))))
+        (log10   ,(lambda (x) (/ (log x) (log 10.0))))
+        (mod     ,(lambda (x y) (- x (* (div x y) y))))
+        (quot    ,(lambda (x y) (truncate (/ x y))))
+        (rem     ,(lambda (x y) (- x (* (quot x y) y))))
+        (+ ,+)
+        (^ ,expt)
+        (ceil ,ceiling)
+        (exp ,exp)
+        (floor ,floor)
+        (log ,log)
+        (sqrt ,sqrt)
+        ;;
+        (- ,-)
+        (* ,*)
+        (/ ,/)
+        (abs ,abs)
+        (< ,<)
+        (<= ,<=)
+        (> ,>)
+        (>= ,>=)
+        (= , =)
+     ))
 ;; variable table
 (define *variable-table* (make-hash))
 (define (variable-get key)
@@ -110,3 +144,5 @@
 (define (hash-set!)
 
 )
+
+(define (interpret-program))
