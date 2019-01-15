@@ -70,13 +70,43 @@
 ;;      (main (vector->list (current-command-line-arguments))))
 
 ;; ------- Start of own code -------
+
 ;; function table
 (define *function-table* (make-hash))
+(define (function-get key)
+        (hash-ref *function-table* key))
+(define (function-put! key value)
+        (hash-set! *function-table* key value))
+
 ;; variable table
 (define *variable-table* (make-hash))
+(define (variable-get key)
+        (hash-ref *variable-table* key))
+(define (variable-put! key value)
+        (hash-set! *variable-table* key value))
+
 ;; array table
 (define *array-table* (make-hash))
+(define (array-get key)
+        (hash-ref *array-table* key))
+(define (array-put! key value)
+        (hash-set! *array-table* key value))
+
+;; function for updating an array (vector)
+(define (vector-set!)
+
+)
+
 ;; label table
 (define *label-table* (make-hash))
-t
+(define (label-get key)
+        (hash-ref *label-table* key))
+(define (label-put! key value)
+        (hash-set! *label-table* key value))
 
+
+
+;; function for updating the symbol tables
+(define (hash-set!)
+
+)
