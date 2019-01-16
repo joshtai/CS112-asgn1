@@ -132,9 +132,9 @@
         (hash-set! *array-table* key value))
 
 ;; function for updating an array (vector)
-(define (vector-set!)
+;;(define (vector-set!)
 
-)
+;;)
 
 ;; LABEL TABLE
 (define *label-table* (make-hash))
@@ -146,8 +146,8 @@
 
 
 ;; function for updating the symbol tables
-(define (hash-set!)
+;;(define (hash-set!)
 
-)
+;;)
 
-(define (interpret-program))
+;;(define (interpret-program))
