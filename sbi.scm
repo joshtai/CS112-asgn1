@@ -15,61 +15,11 @@
 
 (define *stdin* (current-input-port))
 (define *stdout* (current-output-port))
-
-;; standard error
 (define *stderr* (current-error-port))
 
-(define *run-file*
-    (let-values
-        (((dirpath basepath root?)
-            (split-path (find-system-path 'run-file))))
-        (path->string basepath))
-)
-
-(define (die list)
-    (for-each (lambda (item) (display item *stderr*)) list)
-    (newline *stderr*)
-    (exit 1)
-)
-
-(define (usage-exit)
-    (die `("Usage: " ,*run-file* " filename"))
-)
-
-(define (readlist-from-inputfile filename)
-    (let ((inputfile (open-input-file filename)))
-         (if (not (input-port? inputfile))
-             (die `(,*run-file* ": " ,filename ": open failed"))
-             (let ((program (read inputfile)))
-                  (close-input-port inputfile)
-                         program))))
-
-(define (dump-stdin)
-    (let ((token (read)))
-         (printf "token=~a~n" token)
-         (when (not (eq? token eof)) (dump-stdin))))
-
-
-(define (write-program-by-line filename program)
-    (printf "==================================================~n")
-    (printf "~a: ~s~n" *run-file* filename)
-    (printf "==================================================~n")
-    (printf "(~n")
-    (map (lambda (line) (printf "~s~n" line)) program)
-    (printf ")~n")
-    (dump-stdin))
-
-(define (main arglist)
-    (if (or (null? arglist) (not (null? (cdr arglist))))
-        (usage-exit)
-        (let* ((sbprogfile (car arglist))
-               (program (readlist-from-inputfile sbprogfile)))
-              (write-program-by-line sbprogfile program))))
-
-;;(when (terminal-port? *stdin*)
-;;      (main (vector->list (current-command-line-arguments))))
-
-;; ------- Start of own code -------
+;; ------------------------------------------------
+;; --------------- Start of own code --------------
+;; ------------------------------------------------
 
 ;; FUNCTION TABLE
 (define *function-table* (make-hash))
@@ -143,11 +93,66 @@
 (define (label-put! key value)
         (hash-set! *label-table* key value))
 
+;; Gets the program and then puts the labels
+;; into the label hashtable (does it recursively)
+;; similar to listhash from Scheme Example
+(define (fetch-labels program)
+    (when (not (null? program)) ;; when program is not empty then go into body
+        (when (and (not (null? (cdar program))))
+            (let (f (cadar program)) ;; 
+                (when (symbol? f)
+                    (label-put! (cadar program) program))))
+            (fetch-labels (cdr program))))
+
+;; --------- END ----------
+
+(define *run-file*
+    (let-values
+        (((dirpath basepath root?)
+            (split-path (find-system-path 'run-file))))
+        (path->string basepath))
+)
+
+(define (die list)
+    (for-each (lambda (item) (display item *stderr*)) list)
+    (newline *stderr*)
+    (exit 1)
+)
+
+(define (usage-exit)
+    (die `("Usage: " ,*run-file* " filename"))
+)
+
+(define (readlist-from-inputfile filename)
+    (let ((inputfile (open-input-file filename)))
+         (if (not (input-port? inputfile))
+             (die `(,*run-file* ": " ,filename ": open failed"))
+             (let ((program (read inputfile)))
+                  (close-input-port inputfile)
+                         program))))
+
+(define (dump-stdin)
+    (let ((token (read)))
+         (printf "token=~a~n" token)
+         (when (not (eq? token eof)) (dump-stdin))))
 
 
-;; function for updating the symbol tables
-;;(define (hash-set!)
+(define (write-program-by-line filename program)
+    (printf "==================================================~n")
+    (printf "~a: ~s~n" *run-file* filename)
+    (printf "==================================================~n")
+    (printf "(~n")
+    (map (lambda (line) (printf "~s~n" line)) program)
+    (printf ")~n")
+    (dump-stdin))
 
-;;)
+(define (main arglist)
+    (if (or (null? arglist) (not (null? (cdr arglist))))
+        (usage-exit)
+        (let* ((sbprogfile (car arglist))
+               (program (readlist-from-inputfile sbprogfile)))
+              (write-program-by-line sbprogfile program))))
 
-;;(define (interpret-program))
+;;(when (terminal-port? *stdin*)
+;;    (main (vector->list (current-command-line-arguments))))
+
