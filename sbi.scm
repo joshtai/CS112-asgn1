@@ -61,6 +61,7 @@
 
 ;; VARIABLE TABLE
 (define *variable-table* (make-hash))
+;; Variable-get => if key is in table return val, else return 0
 (define (variable-get key)
         (if (hash-has-key? *variable-table* key) (hash-ref *variable-table* key) 0))
 (define (variable-put! key value)
@@ -100,15 +101,46 @@
 (define (fetch-labels list)
 ;; unless => (when (not ))
 ;; (unless #f) => true
-;; (unless (positive? -5)) => true
     (unless (null? list)
         (unless (null? (cdar list))
-            (let ((first (cadar list)))
-                (when (symbol? first)
-                    (label-put! first list))))
+            (let ((ele (cadar list)))
+                (when (symbol? ele)
+                    (label-put! ele list))))
         (fetch-labels (cdr list))
     )
 )
+
+(define (interpret-program program)
+    (let ((line (car program)))
+        ()
+    
+    
+    
+    
+    
+    )
+)
+
+
+;; go to a label
+(define (interpret-goto program)
+        (interpret-program (label-get program))
+)
+
+;;(define (interpret-if program))
+
+;;(define (interpret-let program))
+
+;;(define (interpret-dim program))
+
+;;(define (interpret-print program))
+
+;;(define (interpret-input program))
+
+
+
+
+
 ;; --------- END ----------
 
 (define *run-file*
@@ -158,6 +190,7 @@
                (program (readlist-from-inputfile sbprogfile)))
               ;;(write-program-by-line sbprogfile program)
               (fetch-labels program)
+              (interpret-program program)
               )))
 
 ;;(when (terminal-port? *stdin*)
