@@ -62,7 +62,7 @@
 ;; VARIABLE TABLE
 (define *variable-table* (make-hash))
 (define (variable-get key)
-        (hash-ref *variable-table* key))
+        (if (hash-has-key? *variable-table* key) (hash-ref *variable-table* key) 0))
 (define (variable-put! key value)
         (hash-set! *variable-table* key value))
 ;; init *variable-table*
@@ -71,6 +71,7 @@
     (lambda (pair) 
         (variable-put! (car pair) (cadr pair)))
     `( 
+        (eof 0)
         (e 2.718281828459045235360287471352662497757247093)
         (pi 3.141592653589793238462643383279502884197169399)
      ))
@@ -96,14 +97,15 @@
 ;; Gets the program and then puts the labels
 ;; into the label hashtable (does it recursively)
 ;; similar to listhash from Scheme Example
-(define (fetch-labels program)
-    (when (not (null? program)) ;; when program is not empty then go into body
-        (when (and (not (null? (cdar program))))
-            (let (f (cadar program)) ;; 
-                (when (symbol? f)
-                    (label-put! (cadar program) program))))
-            (fetch-labels (cdr program))))
-
+(define (fetch-labels list)
+    (when (not (null? list))
+        (when (and (not (null? (cdar list))))
+            (let ((first (cadar list)))
+                (when (symbol? first)
+                    (label-put! first list))))
+        (fetch-labels (cdr list))
+    )
+)
 ;; --------- END ----------
 
 (define *run-file*
@@ -151,7 +153,9 @@
         (usage-exit)
         (let* ((sbprogfile (car arglist))
                (program (readlist-from-inputfile sbprogfile)))
-              (write-program-by-line sbprogfile program))))
+              ;;(write-program-by-line sbprogfile program)
+              (hashing program)
+              )))
 
 ;;(when (terminal-port? *stdin*)
 ;;    (main (vector->list (current-command-line-arguments))))
