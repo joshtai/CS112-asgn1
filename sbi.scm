@@ -98,8 +98,11 @@
 ;; into the label hashtable (does it recursively)
 ;; similar to listhash from Scheme Example
 (define (fetch-labels list)
-    (when (not (null? list))
-        (when (and (not (null? (cdar list))))
+;; unless => (when (not ))
+;; (unless #f) => true
+;; (unless (positive? -5)) => true
+    (unless (null? list)
+        (unless (null? (cdar list))
             (let ((first (cadar list)))
                 (when (symbol? first)
                     (label-put! first list))))
@@ -154,7 +157,7 @@
         (let* ((sbprogfile (car arglist))
                (program (readlist-from-inputfile sbprogfile)))
               ;;(write-program-by-line sbprogfile program)
-              (hashing program)
+              (fetch-labels program)
               )))
 
 ;;(when (terminal-port? *stdin*)
