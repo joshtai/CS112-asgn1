@@ -63,7 +63,7 @@
 (define *variable-table* (make-hash))
 ;; Variable-get => if key is in table return val, else return 0
 (define (variable-get key)
-        (if (hash-has-key? *variable-table* key) (hash-ref *variable-table* key) 0))
+    (if (hash-has-key? *variable-table* key) (hash-ref *variable-table* key) 0))
 (define (variable-put! key value)
         (hash-set! *variable-table* key value))
 ;; init *variable-table*
@@ -105,26 +105,45 @@
         (unless (null? (cdar list))
             (let ((ele (cadar list)))
                 (when (symbol? ele)
+                    ;; debugging
+                    (display ele)
+                    (display list)
+                    (display "\n")
+                    ;;
                     (label-put! ele list))))
         (fetch-labels (cdr list))
     )
 )
-
+;; interprets 1 line of the program
+;; calls appropriate statement functions
 (define (interpret-program program)
     (let ((line (car program)))
-        ()
-    
-    
-    
-    
-    
+        (when (equal? (length line) 1) ;; when theres only the line number (no statement)
+            (interpret-program (cdr program)) ;; check the next linenumber
+        ;;(when (equal? (length line) 2)
+            
+        ;;)
+            
+
+        ;; print/let
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        )
     )
 )
 
-
 ;; go to a label
-(define (interpret-goto program)
-        (interpret-program (label-get program))
+(define (interpret-goto label)
+        (interpret-program (label-get label))
 )
 
 ;;(define (interpret-if program))
@@ -190,7 +209,7 @@
                (program (readlist-from-inputfile sbprogfile)))
               ;;(write-program-by-line sbprogfile program)
               (fetch-labels program)
-              (interpret-program program)
+              ;;(interpret-program program)
               )))
 
 ;;(when (terminal-port? *stdin*)
