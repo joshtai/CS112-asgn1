@@ -123,7 +123,7 @@
           [(pair? (cadr line)) (cadr line)]
           [(null? (cddr line)) null]
           [(pair? (caddr line)) (caddr line)]
-          [else (error "Error in syntax of file~n")]
+          [else (error "Error in syntax of file")]
         )))
         (unless (null? statement)
           (interpret-statement statement)     ;;if there is a statement, then interpret it
@@ -137,6 +137,18 @@
 
 (define (interpret-statement statement)
   (printf "statement is : ~a~n" statement)
+  (let ((keyword (symbol->string(car statement))))
+    (printf "keyword is : ~a~n" keyword)
+    (cond                                   ;;this conditional finds out which kind of statement this is
+      [(equal? keyword "print") (printf"print~n")]
+      [(equal? keyword "let") (printf"let~n")]
+      [(equal? keyword "if") (printf"if~n")]
+      [(equal? keyword "dim") (printf"dim~n")]
+      [(equal? keyword "goto") (printf"goto~n")]
+      [(equal? keyword "input") (printf"input~n")]
+      [else (error "No such statement")]
+    )
+  )
 )
 
 
