@@ -115,14 +115,28 @@
 
   (unless (null? program)
     (let ((line (car program)))
-      (let ((line1 (car line))) ;;line1, the car of line, is always the linenum
-        ;;(when (pair? line1)
-          (printf "line1 is : ~a\n" line1)
-        ;;)
+      (printf "line is : ~a\n" line)
+
+      (let ( (statement
+        (cond                                   ;;this conditional evaluates the appropriate statement for the specific line
+          [(null? (cdr line)) null]
+          [(pair? (cadr line)) (cadr line)]
+          [(null? (cddr line)) null]
+          [(pair? (caddr line)) (caddr line)]
+          [else (error "Error in syntax of file~n")]
+        )))
+        (unless (null? statement)
+          (interpret-statement statement)     ;;if there is a statement, then interpret it
+        )
       )
     )
+
     (interpret-program (cdr program))
   )
+)
+
+(define (interpret-statement statement)
+  (printf "statement is : ~a~n" statement)
 )
 
 
