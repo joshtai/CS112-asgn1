@@ -30,7 +30,7 @@
 
 ;; initalize *function table*
 ;; pulled from
-;; https://ds26gte.github.io/tyscheme/index-Z-H-4.html#node_sec_2.1 
+;; https://ds26gte.github.io/tyscheme/index-Z-H-4.html#node_sec_2.1
 (for-each
     (lambda (pair)
         (function-put! (car pair) (cadr pair)))
@@ -63,15 +63,15 @@
 (define *variable-table* (make-hash))
 ;; Variable-get => if key is in table return val, else return 0
 (define (variable-get key)
-    (if (hash-has-key? *variable-table* key) (hash-ref *variable-table* key) 0))
+        (if (hash-has-key? *variable-table* key) (hash-ref *variable-table* key) 0))
 (define (variable-put! key value)
         (hash-set! *variable-table* key value))
 ;; init *variable-table*
 ;; e & pi
 (for-each
-    (lambda (pair) 
+    (lambda (pair)
         (variable-put! (car pair) (cadr pair)))
-    `( 
+    `(
         (eof 0)
         (e 2.718281828459045235360287471352662497757247093)
         (pi 3.141592653589793238462643383279502884197169399)
@@ -104,46 +104,31 @@
     (unless (null? list)
         (unless (null? (cdar list))
             (let ((ele (cadar list)))
+              ;;(printf "ele: ~a\n" ele)
                 (when (symbol? ele)
-                    ;; debugging
-                    (display ele)
-                    (display list)
-                    (display "\n")
-                    ;;
                     (label-put! ele list))))
         (fetch-labels (cdr list))
     )
 )
-;; interprets 1 line of the program
-;; calls appropriate statement functions
-(define (interpret-program program)
-    (let ((line (car program)))
-        (when (equal? (length line) 1) ;; when theres only the line number (no statement)
-            (interpret-program (cdr program)) ;; check the next linenumber
-        ;;(when (equal? (length line) 2)
-            
-        ;;)
-            
 
-        ;; print/let
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        )
+(define (interpret-program program)
+
+  (unless (null? program)
+    (let ((line (car program)))
+      (let ((line1 (car line))) ;;line1, the car of line, is always the linenum
+        ;;(when (pair? line1)
+          (printf "line1 is : ~a\n" line1)
+        ;;)
+      )
     )
+    (interpret-program (cdr program))
+  )
 )
 
+
 ;; go to a label
-(define (interpret-goto label)
-        (interpret-program (label-get label))
+(define (interpret-goto program)
+        (interpret-program (label-get program))
 )
 
 ;;(define (interpret-if program))
@@ -209,9 +194,8 @@
                (program (readlist-from-inputfile sbprogfile)))
               ;;(write-program-by-line sbprogfile program)
               (fetch-labels program)
-              ;;(interpret-program program)
+              (interpret-program program)
               )))
 
 ;;(when (terminal-port? *stdin*)
 ;;    (main (vector->list (current-command-line-arguments))))
-
