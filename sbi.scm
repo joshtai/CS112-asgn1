@@ -112,11 +112,9 @@
 )
 
 (define (interpret-program program)
-
   (unless (null? program)
     (let ((line (car program)))
       (printf "line is : ~a\n" line)
-
       (let ( (statement
         (cond                                   ;;this conditional evaluates the appropriate statement for the specific line
           [(null? (cdr line)) null]
@@ -130,7 +128,6 @@
         )
       )
     )
-
     (interpret-program (cdr program))
   )
 )
@@ -151,17 +148,29 @@
   )
 )
 
+;; used hashexample.scm as an example
+(define (evaluate-expression expr)
+    (cond
+        [(string? expr) expr]
+        [(symbol? expr) (function-get expr #f)]
+    )
+)
 
 ;; go to a label
 (define (interpret-goto program)
         (interpret-program (label-get program))
 )
 
-;;(define (interpret-if program))
+(define (interpret-if program)) (
 
-;;(define (interpret-let program))
+)
 
-;;(define (interpret-dim program))
+(define (interpret-let program)) (
+
+)
+
+(define (interpret-dim program)) (
+)
 
 ;;(define (interpret-print program))
 
