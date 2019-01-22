@@ -49,6 +49,7 @@
         (log ,log)
         (sqrt ,sqrt)
         ;;
+        (<>,(lambda (x y) (not(= x y))))
         (print, print)
         (- ,-)
         (* ,*)
@@ -135,7 +136,7 @@
 )
 
 (define (interpret-statement statement program)
-  ;;(printf "statement is : ~a~n" statement)
+  (printf "statement is : ~a~n" statement)
   (let ((keyword (symbol->string(car statement))))
     ;;(printf "keyword is : ~a~n" keyword)
     (let ((next_statement                       ;;next_statement is void if no control transfer, otherwise will be appropriate statement to jump to
@@ -197,7 +198,7 @@
     (unless (null? program)
         (when (evaluate-expression (car program))
             (when (hash-has-key? *label-table* (cdr program))
-                (label-get (car program)))))
+                (label-get (cdr program)))))
 )
 
 (define (interpret-let program)
