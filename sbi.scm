@@ -60,7 +60,15 @@
         (> ,>)
         (>= ,>=)
         (= , =)
+        (sin, sin)
+        (cos, cos)
+        (tan, tan)
+        (acos, acos)
+        (asin, asin)
         (atan, atan)
+        (round, round)
+        ;; a, 6.0
+        (asub, (lambda (x y) (vector-ref (array-get x) (exact-round y))))
      ))
 
 ;; VARIABLE TABLE
@@ -86,6 +94,9 @@
         (hash-ref *array-table* key))
 (define (array-put! key value)
         (hash-set! *array-table* key value))
+
+;; function for making an array (vector)
+
 
 ;; function for updating an array (vector)
 ;;(define (vector-set!)
@@ -145,7 +156,7 @@
           [(equal? keyword "print") (interpret-print (cdr statement))]
           [(equal? keyword "let") (interpret-let (cdr statement))]
           [(equal? keyword "if") (interpret-if (cdr statement))] ;; ((= eof 1) stop)
-          [(equal? keyword "dim") (interpret-dim statement)]
+          [(equal? keyword "dim") (interpret-dim (cadr statement))]
           [(equal? keyword "goto") (interpret-goto (cdr statement))]
           [(equal? keyword "input") (interpret-input statement)]
           [else (error "No such statement")]
@@ -208,19 +219,44 @@
 (define (interpret-let program)
     ;;(printf "let ~a~n" program)
     (let ((symbol (car program)))
-        ;;(printf "let ~a~n" symbol)
+        ;;a = (cadr symbol))
+        ;;i = (caddr symbol)
+        ;;(printf "symbol ~a~n" (pair? symbol))
         ;;(printf "let ~a~n" (cadr program))
-
         (let ((val (evaluate-expression (cadr program))))
-            (variable-put! symbol val)
+
+            (when (pair? symbol)
+              ;;(printf "ya ~a ~n" (evaluate-expression (caddr symbol)))
+              ;;(printf "ya ~a ~n" (array-get (cadr symbol)))
+              (vector-set! (array-get (cadr symbol)) (exact-round (evaluate-expression (caddr symbol))) val)
+
+              ;;(printf"test: ~a~n" (vector-ref (array-get (cadr symbol)) (exact-round (evaluate-expression (caddr symbol)))))
+
+            )
+            (unless (pair? symbol)
+              (variable-put! symbol val)
+            )
+
         )
     )
 )
 
 (define (interpret-dim program)
     (unless (null? program)
-        (variable-put! (car program) (make-vector (inexact->exact (evaluate-expression (cadr program))) 0))
-    ))
+        ;;(printf"program: ~a~n" (cadr program))
+        ;;(printf"program: ~a~n" (caddr program))
+        ;;(printf"test: ~a~n" (inexact->exact (evaluate-expression(caddr program))))
+        ;;(printf"test: ~a~n" (exact-round 4.7))
+
+        (when (> 0 (caddr program))
+          (error "cant have negative length array")
+        )
+
+        (array-put! (cadr program) (make-vector (exact-round (evaluate-expression(caddr program))) 0))
+
+        ;;(printf"test: ~a~n" (vector-ref (array-get(cadr program)) 9))
+    )
+)
 
 (define (interpret-print statement)
   (unless (null? statement)
@@ -291,5 +327,5 @@
               (interpret-program program)
               )))
 
-;;(when (terminal-port? *stdin*)
-;;    (main (vector->list (current-command-line-arguments))))
+(when (terminal-port? *stdin*)
+    (main (vector->list (current-command-line-arguments))))
