@@ -193,12 +193,11 @@
 )
 
 (define (interpret-if program)
-    ;; if the expression is true then goto next label
-    ;; else just continue the next line of the program
+    ;; (if (expr) label)
     (unless (null? program)
-
-    (printf "if~n")
-    )
+        (when (evaluate-expression (car program))
+            (when (hash-has-key? *label-table* (cdr program))
+                (label-get (car program)))))
 )
 
 (define (interpret-let program)
@@ -211,8 +210,9 @@
 )
 
 (define (interpret-dim program)
-    (variable-put! (car program) (make-vector (inexact->exact (evaluate-expression (cadr program))) 0))
-)
+    (unless (null? program)
+        (variable-put! (car program) (make-vector (inexact->exact (evaluate-expression (cadr program))) 0))
+    ))
 
 (define (interpret-print statement)
   (unless (null? statement)
