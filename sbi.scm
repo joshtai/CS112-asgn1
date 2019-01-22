@@ -123,27 +123,37 @@
           [(pair? (caddr line)) (caddr line)]
           [else (error "Error in syntax of file")]
         )))
-        (unless (null? statement)
-          (interpret-statement statement)     ;;if there is a statement, then interpret it
+        (if (null? statement)
+          (interpret-program (cdr program))
+          (interpret-statement statement program)     ;;if there is a statement, then interpret it
         )
+
       )
     )
-    (interpret-program (cdr program))
+
   )
 )
 
-(define (interpret-statement statement)
-  (printf "statement is : ~a~n" statement)
+(define (interpret-statement statement program)
+  ;;(printf "statement is : ~a~n" statement)
   (let ((keyword (symbol->string(car statement))))
-    (printf "keyword is : ~a~n" keyword)
-    (cond                                   ;;this conditional finds out which kind of statement this is
-      [(equal? keyword "print") (printf"print~n")]
-      [(equal? keyword "let") (printf"let~n")]
-      [(equal? keyword "if") (printf"if~n")]
-      [(equal? keyword "dim") (printf"dim~n")]
-      [(equal? keyword "goto") (printf"goto~n")]
-      [(equal? keyword "input") (printf"input~n")]
-      [else (error "No such statement")]
+    ;;(printf "keyword is : ~a~n" keyword)
+    (let ((next_statement                       ;;next_statement is void if no control transfer, otherwise will be appropriate statement to jump to
+        (cond                                   ;;this conditional finds out which kind of statement this is
+          [(equal? keyword "print") (interpret-print statement)]
+          [(equal? keyword "let") (interpret-let statement)]
+          [(equal? keyword "if") (interpret-if statement)]
+          [(equal? keyword "dim") (interpret-dim statement)]
+          [(equal? keyword "goto") (interpret-goto statement)]
+          [(equal? keyword "input") (interpret-input statement)]
+          [else (error "No such statement")]
+        )))
+
+        (printf "next: ~a~n" next_statement)
+        (if (void? next_statement)
+          (interpret-program (cdr program))
+          (interpret-program next_statement)     ;;if there is a statement, then interpret it
+        )
     )
   )
 )
@@ -158,23 +168,29 @@
 
 ;; go to a label
 (define (interpret-goto program)
-        (interpret-program (label-get program))
+        (printf "interpret goto ~a~n" program)
+        ;;(interpret-program (label-get program))
 )
 
-(define (interpret-if program)) (
-
+(define (interpret-if program)
+        (printf "interpret if ~a~n" program)
 )
 
-(define (interpret-let program)) (
-
+(define (interpret-let program)
+        (printf "interpret let~n")
 )
 
-(define (interpret-dim program)) (
+(define (interpret-dim program)
+        (printf "interpret dim~n")
 )
 
-;;(define (interpret-print program))
+(define (interpret-print program)
+        (printf "interpret print~n")
+)
 
-;;(define (interpret-input program))
+(define (interpret-input program)
+        (printf "interpret input~n")
+)
 
 
 
