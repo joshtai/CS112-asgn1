@@ -35,6 +35,7 @@
     (lambda (pair)
         (function-put! (car pair) (cadr pair)))
     `(
+
         (div     ,(lambda (x y) (floor (/ x y))))
         (log10   ,(lambda (x) (/ (log x) (log 10.0))))
         (mod     ,(lambda (x y) (- x (* (div x y) y))))
@@ -127,10 +128,8 @@
           (interpret-program (cdr program))
           (interpret-statement statement program)     ;;if there is a statement, then interpret it
         )
-
       )
     )
-
   )
 )
 
@@ -148,7 +147,6 @@
           [(equal? keyword "input") (interpret-input statement)]
           [else (error "No such statement")]
         )))
-
         (printf "next: ~a~n" next_statement)
         (if (void? next_statement)
           (interpret-program (cdr program))
@@ -158,13 +156,27 @@
   )
 )
 
-;; used hashexample.scm as an example
+;; used hashexample.scm as an example (apply then map)
 (define (evaluate-expression expr)
-    (cond
-        [(string? expr) expr]
-        [(symbol? expr) (function-get expr #f)]
-    )
-)
+    (cond 
+        [(number? expr) expr]
+        [(and (hash-has-key? *variable-table* expr) (symbol? expr)) (variable-get expr)]
+        [(pair? expr)
+            ;; (cons x (cons y z))
+            ;;(printf "pair? ~a~n" expr)
+            ;;(printf "~a~n" (cdr expr))
+            (cond
+                [(hash-has-key? *variable-table* (car expr))
+                    (vector-ref (variable-get (car expr))
+                        (- (inexact->exact (evaluate-expression (cadr expr))) 1)
+                    )
+                ]
+                ;; gets (car expr) -> applies the correct function
+                [(hash-has-key? *function-table* (car expr))
+                    (apply (function-get (car expr))
+                        (map evaluate-expression (cdr expr)))]
+            )]
+    (else #f)))
 
 ;; go to a label
 (define (interpret-goto program)
@@ -191,9 +203,6 @@
 (define (interpret-input program)
         (printf "interpret input~n")
 )
-
-
-
 
 
 ;; --------- END ----------
