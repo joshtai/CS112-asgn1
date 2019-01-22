@@ -139,7 +139,7 @@
     ;;(printf "keyword is : ~a~n" keyword)
     (let ((next_statement                       ;;next_statement is void if no control transfer, otherwise will be appropriate statement to jump to
         (cond                                   ;;this conditional finds out which kind of statement this is
-          [(equal? keyword "print") (interpret-print statement)]
+          [(equal? keyword "print") (interpret-print (cdr statement))]
           [(equal? keyword "let") (interpret-let statement)]
           [(equal? keyword "if") (interpret-if statement)]
           [(equal? keyword "dim") (interpret-dim statement)]
@@ -197,14 +197,18 @@
 )
 
 (define (interpret-print statement)
-        ;;(printf "interpret print ~a ~n" (cdr statement))
-        (unless (null? (cdr statement))
-          (let ((expr (cdr statement)))
-            (printf "expression before eval: ~a ~n" expr)
-            (printf "after eval: ~a" (evaluate-expression 'expr))
-          )
+
+  (unless (null? statement)
+
+      (let ((expr (car statement)))
+        (if (pair? expr)
+                    (printf " ~a" (evaluate-expression expr))
+                    (printf "~a" expr)
         )
-        (printf "~n")
+      )
+      (interpret-print (cdr statement))
+  )
+  (when (null? statement) (printf "~n"))
 
 )
 
