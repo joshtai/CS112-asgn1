@@ -115,7 +115,7 @@
 (define (interpret-program program)
   (unless (null? program)
     (let ((line (car program)))
-      (printf "line is : ~a\n" line)
+      ;;(printf "line is : ~a\n" line)
       (let ( (statement
         (cond                                   ;;this conditional evaluates the appropriate statement for the specific line
           [(null? (cdr line)) null]
@@ -147,7 +147,7 @@
           [(equal? keyword "input") (interpret-input statement)]
           [else (error "No such statement")]
         )))
-        (printf "next: ~a~n" next_statement)
+        ;;(printf "next: ~a~n" next_statement)
         (if (void? next_statement)
           (interpret-program (cdr program))
           (interpret-program next_statement)     ;;if there is a statement, then interpret it
@@ -158,7 +158,7 @@
 
 ;; used hashexample.scm as an example (apply then map)
 (define (evaluate-expression expr)
-    (cond 
+    (cond
         [(number? expr) expr]
         [(and (hash-has-key? *variable-table* expr) (symbol? expr)) (variable-get expr)]
         [(pair? expr)
@@ -196,8 +196,16 @@
         (printf "interpret dim~n")
 )
 
-(define (interpret-print program)
-        (printf "interpret print~n")
+(define (interpret-print statement)
+        ;;(printf "interpret print ~a ~n" (cdr statement))
+        (unless (null? (cdr statement))
+          (let ((expr (cdr statement)))
+            (printf "expression before eval: ~a ~n" expr)
+            (printf "after eval: ~a" (evaluate-expression 'expr))
+          )
+        )
+        (printf "~n")
+
 )
 
 (define (interpret-input program)
@@ -248,6 +256,7 @@
     (dump-stdin))
 
 (define (main arglist)
+
     (if (or (null? arglist) (not (null? (cdr arglist))))
         (usage-exit)
         (let* ((sbprogfile (car arglist))
@@ -257,5 +266,5 @@
               (interpret-program program)
               )))
 
-;;(when (terminal-port? *stdin*)
-;;    (main (vector->list (current-command-line-arguments))))
+(when (terminal-port? *stdin*)
+    (main (vector->list (current-command-line-arguments))))
