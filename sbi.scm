@@ -59,6 +59,7 @@
         (> ,>)
         (>= ,>=)
         (= , =)
+        (atan, atan)
      ))
 
 ;; VARIABLE TABLE
@@ -141,7 +142,7 @@
     (let ((next_statement                       ;;next_statement is void if no control transfer, otherwise will be appropriate statement to jump to
         (cond                                   ;;this conditional finds out which kind of statement this is
           [(equal? keyword "print") (interpret-print (cdr statement))]
-          [(equal? keyword "let") (interpret-let statement)]
+          [(equal? keyword "let") (interpret-let (cdr statement))]
           [(equal? keyword "if") (interpret-if (cdr statement))] ;; ((= eof 1) stop)
           [(equal? keyword "dim") (interpret-dim statement)]
           [(equal? keyword "goto") (interpret-goto (cdr statement))]
@@ -202,10 +203,13 @@
 )
 
 (define (interpret-let program)
-    (unless (null? program)
-        (cond
-            [(pair? (car program))]
+    ;;(printf "let ~a~n" program)
+    (let ((symbol (car program)))
+        ;;(printf "let ~a~n" symbol)
+        ;;(printf "let ~a~n" (cadr program))
 
+        (let ((val (evaluate-expression (cadr program))))
+            (variable-put! symbol val)
         )
     )
 )
@@ -217,7 +221,7 @@
 (define (interpret-print statement)
   (unless (null? statement)
       (let ((expr (car statement)))
-        (if (pair? expr)
+        (if (or (symbol? expr)(pair? expr))
                     (printf " ~a" (evaluate-expression expr))
                     (printf "~a" expr)
         )
@@ -283,5 +287,5 @@
               (interpret-program program)
               )))
 
-;;(when (terminal-port? *stdin*)
-    ;;(main (vector->list (current-command-line-arguments))))
+(when (terminal-port? *stdin*)
+    (main (vector->list (current-command-line-arguments))))
