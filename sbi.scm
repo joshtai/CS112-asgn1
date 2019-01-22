@@ -137,7 +137,7 @@
 )
 
 (define (interpret-statement statement program)
-  (printf "statement is : ~a~n" statement)
+  ;;(printf "statement is : ~a~n" statement)
   (let ((keyword (symbol->string(car statement))))
     ;;(printf "keyword is : ~a~n" keyword)
     (let ((next_statement                       ;;next_statement is void if no control transfer, otherwise will be appropriate statement to jump to
@@ -195,11 +195,14 @@
 )
 
 (define (interpret-if program)
-    ;; (if (expr) label)
     (unless (null? program)
         (when (evaluate-expression (car program))
-            (when (hash-has-key? *label-table* (cdr program))
-                (label-get (cdr program)))))
+            (interpret-goto (cdr program))))
+    ;; (if (expr) label)
+    ;;(unless (null? program)
+    ;;    (when (evaluate-expression (car program))
+    ;;        (when (hash-has-key? *label-table* (cdr program))
+    ;;            (label-get (car program)))))
 )
 
 (define (interpret-let program)
@@ -288,5 +291,5 @@
               (interpret-program program)
               )))
 
-(when (terminal-port? *stdin*)
-    (main (vector->list (current-command-line-arguments))))
+;;(when (terminal-port? *stdin*)
+;;    (main (vector->list (current-command-line-arguments))))
