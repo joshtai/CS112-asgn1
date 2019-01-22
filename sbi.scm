@@ -144,7 +144,7 @@
           [(equal? keyword "let") (interpret-let statement)]
           [(equal? keyword "if") (interpret-if (cdr statement))] ;; ((= eof 1) stop)
           [(equal? keyword "dim") (interpret-dim statement)]
-          [(equal? keyword "goto") (interpret-goto statement)]
+          [(equal? keyword "goto") (interpret-goto (cdr statement))]
           [(equal? keyword "input") (interpret-input statement)]
           [else (error "No such statement")]
         )))
@@ -183,7 +183,12 @@
 
 ;; go to a label
 (define (interpret-goto program)
-        ((printf "interpret goto ~a~n" program))
+        ;;(printf "interpret goto ~a~n" program)
+        (if (hash-has-key? *label-table* (car program))
+            (label-get (car program))
+            (error "Label does not exist")
+        )
+
         ;;(interpret-program (label-get program))
 )
 
@@ -191,16 +196,16 @@
     ;; if the expression is true then goto next label
     ;; else just continue the next line of the program
     (unless (null? program)
-    
-    
+
+    (printf "if~n")
     )
 )
 
 (define (interpret-let program)
     (unless (null? program)
-        (cond 
+        (cond
             [(pair? (car program))]
-        
+
         )
     )
 )
@@ -279,4 +284,4 @@
               )))
 
 ;;(when (terminal-port? *stdin*)
-;;    (main (vector->list (current-command-line-arguments))))
+    ;;(main (vector->list (current-command-line-arguments))))
