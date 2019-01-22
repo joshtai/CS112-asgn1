@@ -142,7 +142,7 @@
         (cond                                   ;;this conditional finds out which kind of statement this is
           [(equal? keyword "print") (interpret-print (cdr statement))]
           [(equal? keyword "let") (interpret-let statement)]
-          [(equal? keyword "if") (interpret-if statement)]
+          [(equal? keyword "if") (interpret-if (cdr statement))] ;; ((= eof 1) stop)
           [(equal? keyword "dim") (interpret-dim statement)]
           [(equal? keyword "goto") (interpret-goto statement)]
           [(equal? keyword "input") (interpret-input statement)]
@@ -183,17 +183,25 @@
 
 ;; go to a label
 (define (interpret-goto program)
-        (printf "interpret goto ~a~n" program)
+        ((printf "interpret goto ~a~n" program))
         ;;(interpret-program (label-get program))
 )
 
 (define (interpret-if program)
-        (printf "interpret if ~a~n" program)
+    ;; if the expression is true then goto next label
+    ;; else just continue the next line of the program
+    (unless (null? program)
+    
+    
+    )
 )
 
 (define (interpret-let program)
-    (cond
-        [(pair? (car program))]
+    (unless (null? program)
+        (cond 
+            [(pair? (car program))]
+        
+        )
     )
 )
 
@@ -202,9 +210,7 @@
 )
 
 (define (interpret-print statement)
-
   (unless (null? statement)
-
       (let ((expr (car statement)))
         (if (pair? expr)
                     (printf " ~a" (evaluate-expression expr))
@@ -213,14 +219,11 @@
       )
       (interpret-print (cdr statement))
   )
-  (when (null? statement) (printf "~n"))
-
-)
+  (when (null? statement) (printf "~n")))
 
 (define (interpret-input program)
         (printf "interpret input~n")
 )
-
 
 ;; --------- END ----------
 
