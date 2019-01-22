@@ -49,6 +49,7 @@
         (log ,log)
         (sqrt ,sqrt)
         ;;
+        (print, print)
         (- ,-)
         (* ,*)
         (/ ,/)
@@ -159,7 +160,7 @@
 ;; used hashexample.scm as an example (apply then map)
 (define (evaluate-expression expr)
     (cond
-        [(number? expr) expr]
+        [(number? expr) (+ 0.0 expr)]
         [(and (hash-has-key? *variable-table* expr) (symbol? expr)) (variable-get expr)]
         [(pair? expr)
             ;; (cons x (cons y z))
@@ -175,8 +176,10 @@
                 [(hash-has-key? *function-table* (car expr))
                     (apply (function-get (car expr))
                         (map evaluate-expression (cdr expr)))]
+                (else #f)
             )]
-    (else #f)))
+        (else expr)
+    ))
 
 ;; go to a label
 (define (interpret-goto program)
@@ -189,11 +192,13 @@
 )
 
 (define (interpret-let program)
-        (printf "interpret let~n")
+    (cond
+        [(pair? (car program))]
+    )
 )
 
 (define (interpret-dim program)
-        (printf "interpret dim~n")
+    (variable-put! (car program) (make-vector (inexact->exact (evaluate-expression (cadr program))) 0))
 )
 
 (define (interpret-print statement)
@@ -270,5 +275,5 @@
               (interpret-program program)
               )))
 
-(when (terminal-port? *stdin*)
-    (main (vector->list (current-command-line-arguments))))
+;;(when (terminal-port? *stdin*)
+;;    (main (vector->list (current-command-line-arguments))))
