@@ -67,7 +67,7 @@
         (asin, asin)
         (atan, atan)
         (round, round)
-        (asub, (lambda (x y) 
+        (asub, (lambda (x y)
             (vector-ref (array-get x) (exact-round y))))
      ))
 
@@ -75,7 +75,7 @@
 (define *variable-table* (make-hash))
 ;; Variable-get => if key is in table return val, else return 0
 (define (variable-get key)
-        (if (hash-has-key? *variable-table* key) 
+        (if (hash-has-key? *variable-table* key)
             (hash-ref *variable-table* key) 0))
 (define (variable-put! key value)
         (hash-set! *variable-table* key value))
@@ -133,8 +133,8 @@
     (let ((line (car program)))
       ;;(printf "line is : ~a\n" line)
       (let ((statement
-        
-        (cond 
+
+        (cond
           [(null? (cdr line)) null]
           [(pair? (cadr line)) (cadr line)]
           [(null? (cddr line)) null]
@@ -155,10 +155,10 @@
   ;;(printf "statement is : ~a~n" statement)
   (let ((keyword (symbol->string(car statement))))
     ;;(printf "keyword is : ~a~n" keyword)
-    ;;next_statement is void if no control transfer, 
+    ;;next_statement is void if no control transfer,
     ;;otherwise will be appropriate statement to jump to
     (let ((next_statement
-        ;;this conditional finds out which kind of statement this is  
+        ;;this conditional finds out which kind of statement this is
         (cond
           [(equal? keyword "print") (interpret-print (cdr statement))]
           [(equal? keyword "let") (interpret-let (cdr statement))]
@@ -182,8 +182,8 @@
 (define (evaluate-expression expr)
     (cond
         [(number? expr) (+ 0.0 expr)]
-        [(or 
-            (hash-has-key? *variable-table* expr) (symbol? expr)) 
+        [(or
+            (hash-has-key? *variable-table* expr) (symbol? expr))
                 (variable-get expr)]
         [(pair? expr)
             ;; (cons x (cons y z))
@@ -192,7 +192,7 @@
             (cond
                 [(hash-has-key? *variable-table* (car expr))
                     (vector-ref (variable-get (car expr))
-                        (- (inexact->exact 
+                        (- (inexact->exact
                             (evaluate-expression (cadr expr))) 1)
                     )
                 ]
@@ -238,7 +238,7 @@
             (when (pair? symbol)
               ;;(printf "ya ~a ~n" (evaluate-expression (caddr symbol)))
               ;;(printf "ya ~a ~n" (array-get (cadr symbol)))
-              (vector-set! (array-get (cadr symbol)) 
+              (vector-set! (array-get (cadr symbol))
                 (exact-round (evaluate-expression (caddr symbol))) val)
               ;;(exact-round (evaluate-expression (caddr symbol)))))
             )
@@ -255,8 +255,8 @@
         (when (> 0 (caddr program))
           (error "cant have negative length array")
         )
-        (array-put! (cadr program) 
-            (make-vector 
+        (array-put! (cadr program)
+            (make-vector
                 (exact-round (evaluate-expression(caddr program))) 0))
         ;;(printf"test: ~a~n" (vector-ref (array-get(cadr program)) 9))
     )
@@ -265,7 +265,7 @@
 (define (interpret-print statement)
   (unless (null? statement)
       (let ((expr (car statement)))
-        (if (or (symbol? expr)(pair? expr))
+        (if (or (number? expr)(or (symbol? expr)(pair? expr)))
                     (printf " ~a" (evaluate-expression expr))
                     (printf "~a" expr)
         )
@@ -278,14 +278,14 @@
 (define (interpret-input program)
     (let ((newnum (read)))
         (cond
-            [(or (eof-object? newnum) (not (number? newnum))) 
+            [(or (eof-object? newnum) (not (number? newnum)))
                 (variable-get nan)]
             [(number? newnum)
                 ;;(printf "~a~n" (car program))
                 ;;(printf "~a~n" (variable-get (car program)))
                 (variable-put! (car program) newnum)
             ]
-        )    
+        )
     )
 )
 
@@ -342,5 +342,4 @@
               (interpret-program program)
               )))
 
-(when (terminal-port? *stdin*)
-    (main (vector->list (current-command-line-arguments))))
+(main (vector->list (current-command-line-arguments)))
