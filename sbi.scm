@@ -88,7 +88,7 @@
     (lambda (pair)
         (variable-put! (car pair) (cadr pair)))
     `(
-        (nan 0.0)
+        (nan (/ 0.0 0.0))
         (eof 0)
         (e 2.718281828459045235360287471352662497757247093)
         (pi 3.141592653589793238462643383279502884197169399)
@@ -284,7 +284,8 @@
 (define (interpret-input program)
     (let ((newnum (read)))
         (cond
-            [(or (eof-object? newnum) (not (number? newnum)))
+            [(eof-object? newnum) (variable-put! 'eof 1)]
+            [(not (number? newnum))
                 (variable-get nan)]
             [(number? newnum)
                 ;;(printf "--------~n")
