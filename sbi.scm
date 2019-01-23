@@ -344,7 +344,6 @@
     (dump-stdin))
 
 (define (main arglist)
-
     (if (or (null? arglist) (not (null? (cdr arglist))))
         (usage-exit)
         (let* ((sbprogfile (car arglist))
