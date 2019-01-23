@@ -54,7 +54,7 @@
         (- ,-)
         (* ,*)
         ;; (/ 35 5) ; => 7
-        (/ , (lambda (x y) 
+        (/ , (lambda (x y)
             (/ x (if (equal? y 0) (variable-get nan) y))))
         (abs ,abs)
         (< ,<)
@@ -252,11 +252,13 @@
 
 (define (interpret-dim program)
     (unless (null? program)
-        ;;(printf "dim with ~a ~n" program)
+        (printf "dim with ~a ~n" program)
+        (printf "dim ~a ~n " (evaluate-expression(caddr program)))
         ;;(printf"test: ~a~n" (exact-round 4.7))
-        (when (> 0 (caddr program))
+        (when (> 0 (evaluate-expression(caddr program)))
           (error "cant have negative length array")
         )
+
         (array-put! (cadr program)
             (make-vector
                 (exact-round (evaluate-expression(caddr program))) 0))
