@@ -281,9 +281,14 @@
             [(or (eof-object? newnum) (not (number? newnum)))
                 (variable-get nan)]
             [(number? newnum)
+                ;;(printf "--------~n")
                 ;;(printf "~a~n" (car program))
                 ;;(printf "~a~n" (variable-get (car program)))
+                ;;(printf "--------~n")
                 (variable-put! (car program) newnum)
+                (unless (null? (cdr program))
+                    (interpret-input (cdr program))
+                )
             ]
         )
     )
