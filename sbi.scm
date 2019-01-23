@@ -68,7 +68,7 @@
         (atan, atan)
         (round, round)
         (asub, (lambda (x y)
-            (vector-ref (array-get x) (exact-round y))))
+            (vector-ref (array-get x) (exact-round (evaluate-expression y)))))
      ))
 
 ;; VARIABLE TABLE
@@ -182,7 +182,7 @@
 (define (evaluate-expression expr)
     (cond
         [(number? expr) (+ 0.0 expr)]
-        [(or
+        [(and
             (hash-has-key? *variable-table* expr) (symbol? expr))
                 (variable-get expr)]
         [(pair? expr)
@@ -236,8 +236,7 @@
         ;;(printf "let ~a~n" (cadr program))
         (let ((val (evaluate-expression (cadr program))))
             (when (pair? symbol)
-              ;;(printf "ya ~a ~n" (evaluate-expression (caddr symbol)))
-              ;;(printf "ya ~a ~n" (array-get (cadr symbol)))
+
               (vector-set! (array-get (cadr symbol))
                 (exact-round (evaluate-expression (caddr symbol))) val)
               ;;(exact-round (evaluate-expression (caddr symbol)))))
@@ -251,6 +250,7 @@
 
 (define (interpret-dim program)
     (unless (null? program)
+        ;;(printf "dim with ~a ~n" program)
         ;;(printf"test: ~a~n" (exact-round 4.7))
         (when (> 0 (caddr program))
           (error "cant have negative length array")
@@ -258,13 +258,13 @@
         (array-put! (cadr program)
             (make-vector
                 (exact-round (evaluate-expression(caddr program))) 0))
-        ;;(printf"test: ~a~n" (vector-ref (array-get(cadr program)) 9))
     )
 )
 
 (define (interpret-print statement)
   (unless (null? statement)
       (let ((expr (car statement)))
+        ;;(printf "expr  ~a ~n" expr)
         (if (or (number? expr)(or (symbol? expr)(pair? expr)))
                     (printf " ~a" (evaluate-expression expr))
                     (printf "~a" expr)
