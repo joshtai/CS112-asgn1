@@ -162,7 +162,7 @@
         (cond
           [(equal? keyword "print") (interpret-print (cdr statement))]
           [(equal? keyword "let") (interpret-let (cdr statement))]
-          [(equal? keyword "if") (interpret-if (cdr statement))] ;; ((= eof 1) stop)
+          [(equal? keyword "if") (interpret-if (cdr statement))]
           [(equal? keyword "dim") (interpret-dim (cadr statement))]
           [(equal? keyword "goto") (interpret-goto (cdr statement))]
           [(equal? keyword "input") (interpret-input (cdr statement))]
@@ -171,7 +171,8 @@
         ;;(printf "next: ~a~n" next_statement)
         (if (void? next_statement)
           (interpret-program (cdr program))
-          (interpret-program next_statement)     ;;if there is a statement, then interpret it
+          ;;if there is a statement, then interpret it
+          (interpret-program next_statement)
         )
     )
   )
@@ -181,7 +182,9 @@
 (define (evaluate-expression expr)
     (cond
         [(number? expr) (+ 0.0 expr)]
-        [(or (hash-has-key? *variable-table* expr) (symbol? expr)) (variable-get expr)]
+        [(or 
+            (hash-has-key? *variable-table* expr) (symbol? expr)) 
+                (variable-get expr)]
         [(pair? expr)
             ;; (cons x (cons y z))
             ;;(printf "pair? ~a~n" expr)
@@ -189,7 +192,8 @@
             (cond
                 [(hash-has-key? *variable-table* (car expr))
                     (vector-ref (variable-get (car expr))
-                        (- (inexact->exact (evaluate-expression (cadr expr))) 1)
+                        (- (inexact->exact 
+                            (evaluate-expression (cadr expr))) 1)
                     )
                 ]
                 ;; gets (car expr) -> applies the correct function
@@ -234,8 +238,9 @@
             (when (pair? symbol)
               ;;(printf "ya ~a ~n" (evaluate-expression (caddr symbol)))
               ;;(printf "ya ~a ~n" (array-get (cadr symbol)))
-              (vector-set! (array-get (cadr symbol)) (exact-round (evaluate-expression (caddr symbol))) val)
-              ;;(printf"test: ~a~n" (vector-ref (array-get (cadr symbol)) (exact-round (evaluate-expression (caddr symbol)))))
+              (vector-set! (array-get (cadr symbol)) 
+                (exact-round (evaluate-expression (caddr symbol))) val)
+              ;;(exact-round (evaluate-expression (caddr symbol)))))
             )
             (unless (pair? symbol)
               (variable-put! symbol val)
@@ -246,15 +251,13 @@
 
 (define (interpret-dim program)
     (unless (null? program)
-        ;;(printf"program: ~a~n" (cadr program))
-        ;;(printf"program: ~a~n" (caddr program))
-        ;;(printf"test: ~a~n" (inexact->exact (evaluate-expression(caddr program))))
         ;;(printf"test: ~a~n" (exact-round 4.7))
         (when (> 0 (caddr program))
           (error "cant have negative length array")
         )
-        (array-put! (cadr program) (make-vector (exact-round (evaluate-expression(caddr program))) 0))
-
+        (array-put! (cadr program) 
+            (make-vector 
+                (exact-round (evaluate-expression(caddr program))) 0))
         ;;(printf"test: ~a~n" (vector-ref (array-get(cadr program)) 9))
     )
 )
@@ -275,7 +278,8 @@
 (define (interpret-input program)
     (let ((newnum (read)))
         (cond
-            [(or (eof-object? newnum) (not (number? newnum)))  (variable-get nan)]
+            [(or (eof-object? newnum) (not (number? newnum))) 
+                (variable-get nan)]
             [(number? newnum)
                 ;;(printf "~a~n" (car program))
                 ;;(printf "~a~n" (variable-get (car program)))
