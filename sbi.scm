@@ -70,7 +70,8 @@
         (atan, atan)
         (round, round)
         (asub, (lambda (x y)
-            (vector-ref (array-get x) (exact-round (evaluate-expression y)))))
+            (vector-ref (array-get x)
+              (- (exact-round (evaluate-expression y)) 1))))
      ))
 
 ;; VARIABLE TABLE
@@ -240,7 +241,8 @@
             (when (pair? symbol)
 
               (vector-set! (array-get (cadr symbol))
-                (exact-round (evaluate-expression (caddr symbol))) val)
+                (exact-round
+                  (- (evaluate-expression (caddr symbol)) 1)) val)
               ;;(exact-round (evaluate-expression (caddr symbol)))))
             )
             (unless (pair? symbol)
@@ -252,8 +254,8 @@
 
 (define (interpret-dim program)
     (unless (null? program)
-        (printf "dim with ~a ~n" program)
-        (printf "dim ~a ~n " (evaluate-expression(caddr program)))
+        ;;(printf "dim with ~a ~n" program)
+        ;;(printf "dim ~a ~n " (evaluate-expression(caddr program)))
         ;;(printf"test: ~a~n" (exact-round 4.7))
         (when (> 0 (evaluate-expression(caddr program)))
           (error "cant have negative length array")
