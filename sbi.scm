@@ -67,15 +67,16 @@
         (asin, asin)
         (atan, atan)
         (round, round)
-        ;; a, 6.0
-        (asub, (lambda (x y) (vector-ref (array-get x) (exact-round y))))
+        (asub, (lambda (x y) 
+            (vector-ref (array-get x) (exact-round y))))
      ))
 
 ;; VARIABLE TABLE
 (define *variable-table* (make-hash))
 ;; Variable-get => if key is in table return val, else return 0
 (define (variable-get key)
-        (if (hash-has-key? *variable-table* key) (hash-ref *variable-table* key) 0))
+        (if (hash-has-key? *variable-table* key) 
+            (hash-ref *variable-table* key) 0))
 (define (variable-put! key value)
         (hash-set! *variable-table* key value))
 ;; init *variable-table*
@@ -131,8 +132,9 @@
   (unless (null? program)
     (let ((line (car program)))
       ;;(printf "line is : ~a\n" line)
-      (let ( (statement
-        (cond                                   ;;this conditional evaluates the appropriate statement for the specific line
+      (let ((statement
+        
+        (cond 
           [(null? (cdr line)) null]
           [(pair? (cadr line)) (cadr line)]
           [(null? (cddr line)) null]
@@ -141,7 +143,8 @@
         )))
         (if (null? statement)
           (interpret-program (cdr program))
-          (interpret-statement statement program)     ;;if there is a statement, then interpret it
+          ;;if there is a statement, then interpret it
+          (interpret-statement statement program)
         )
       )
     )
@@ -152,8 +155,11 @@
   ;;(printf "statement is : ~a~n" statement)
   (let ((keyword (symbol->string(car statement))))
     ;;(printf "keyword is : ~a~n" keyword)
-    (let ((next_statement                       ;;next_statement is void if no control transfer, otherwise will be appropriate statement to jump to
-        (cond                                   ;;this conditional finds out which kind of statement this is
+    ;;next_statement is void if no control transfer, 
+    ;;otherwise will be appropriate statement to jump to
+    (let ((next_statement
+        ;;this conditional finds out which kind of statement this is  
+        (cond
           [(equal? keyword "print") (interpret-print (cdr statement))]
           [(equal? keyword "let") (interpret-let (cdr statement))]
           [(equal? keyword "if") (interpret-if (cdr statement))] ;; ((= eof 1) stop)
@@ -263,13 +269,16 @@
       )
       (interpret-print (cdr statement))
   )
-  (when (null? statement) (printf "~n")))
+  (when (null? statement) (printf "~n"))
+  )
 
 (define (interpret-input program)
     (let ((newnum (read)))
         (cond
             [(or (eof-object? newnum) (not (number? newnum)))  (variable-get nan)]
             [(number? newnum)
+                ;;(printf "~a~n" (car program))
+                ;;(printf "~a~n" (variable-get (car program)))
                 (variable-put! (car program) newnum)
             ]
         )    
@@ -329,5 +338,5 @@
               (interpret-program program)
               )))
 
-;;(when (terminal-port? *stdin*)
-;;    (main (vector->list (current-command-line-arguments))))
+(when (terminal-port? *stdin*)
+    (main (vector->list (current-command-line-arguments))))
