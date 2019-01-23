@@ -53,7 +53,9 @@
         (print, print)
         (- ,-)
         (* ,*)
-        (/ ,/)
+        ;; (/ 35 5) ; => 7
+        (/ , (lambda (x y) 
+            (/ x (if (equal? y 0) (variable-get nan) y))))
         (abs ,abs)
         (< ,<)
         (<= ,<=)
@@ -85,7 +87,7 @@
     (lambda (pair)
         (variable-put! (car pair) (cadr pair)))
     `(
-        (nan (/ 0.0 0.0))
+        (nan 0.0)
         (eof 0)
         (e 2.718281828459045235360287471352662497757247093)
         (pi 3.141592653589793238462643383279502884197169399)
@@ -182,7 +184,7 @@
 (define (evaluate-expression expr)
     (cond
         [(number? expr) (+ 0.0 expr)]
-        [(or
+        [(and
             (hash-has-key? *variable-table* expr) (symbol? expr))
                 (variable-get expr)]
         [(pair? expr)
